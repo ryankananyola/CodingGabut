@@ -36,11 +36,11 @@ function init() {
   ctx.fillRect(0, 0, width, height);
 
   function drawText() {
-    ctx.font = "60px Arial";
+    ctx.font = Math.max(30, width / 15) + "px Arial"; 
     ctx.fillStyle = "lightblue";
     ctx.textAlign = "center";
-    ctx.fillText("I Love You AyPr Sayang", width / 2, height / 2.2 + 400);
-  }
+    ctx.fillText("I Love You AyPr Sayang", width / 2, height * 0.85);   
+    }
 
   function heartPosition(rad) {
     return [
