@@ -1,90 +1,117 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Script loaded!"); // Debugging
-
-    const galleryImages = document.querySelectorAll(".gallery img");
-
-    if (galleryImages.length === 0) {
-        console.warn("No images found in .gallery!");
-        return;
-    }
-
-    // Tambahkan efek fade-in satu per satu setelah halaman dimuat
-    galleryImages.forEach((img, index) => {
-        setTimeout(() => {
-            img.classList.add("show");
-        }, index * 200); // Efek muncul satu per satu setiap 200ms (biar lebih jelas)
-    });
-
-    // Menambahkan event listener untuk efek kembang api saat gambar diklik
-    galleryImages.forEach(img => {
-        img.addEventListener("click", () => {
-            createFireworkEffect(img);
-        });
-    });
-
-    // Efek hover tombol kembali
-    const backButton = document.querySelector(".back-btn");
-    if (backButton) {
-        backButton.addEventListener("click", (event) => {
-            event.preventDefault();
-            document.body.style.opacity = "0";
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 500);
-        });
-    }
+    setupFireworks();
+    releaseBalloons();
 });
 
-// Fungsi efek kembang api
-function createFireworkEffect(element) {
+// ----------------- FIREWORKS EFFECT -----------------
+function setupFireworks() {
     const canvas = document.getElementById("fireworksCanvas");
-    if (!canvas) {
-        console.error("Canvas not found!");
-        return;
-    }
-
     const ctx = canvas.getContext("2d");
+    
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const particles = [];
-    const numParticles = 20; // Lebih banyak efek agar terlihat keren
-    const rect = element.getBoundingClientRect();
+    let fireworks = [];
 
-    for (let i = 0; i < numParticles; i++) {
-        particles.push({
-            x: rect.left + rect.width / 2 + window.scrollX,
-            y: rect.top + rect.height / 2 + window.scrollY,
-            size: Math.random() * 3 + 1,
-            speedX: (Math.random() - 0.5) * 6, // Gerakan lebih dinamis
-            speedY: (Math.random() - 0.5) * 6,
-            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-            alpha: 1,
-        });
+    class Firework {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.particles = [];
+            
+            for (let i = 0; i < 30; i++) {
+                this.particles.push(new Particle(this.x, this.y, this.color));
+            }
+        }
+
+        update() {
+            this.particles.forEach(p => p.update());
+        }
+
+        draw() {
+            this.particles.forEach(p => p.draw());
+        }
+    }
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.size = Math.random() * 4 + 2;
+            this.speedX = (Math.random() - 0.5) * 8;
+            this.speedY = (Math.random() - 0.5) * 8;
+            this.life = 100;
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            this.life -= 1;
+        }
+
+        draw() {
+            ctx.globalAlpha = this.life / 100;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
     }
 
     function animateFireworks() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach((p, index) => {
-            p.x += p.speedX;
-            p.y += p.speedY;
-            p.alpha -= 0.02;
-
-            ctx.globalAlpha = p.alpha;
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-
-            if (p.alpha <= 0) {
-                particles.splice(index, 1);
+        fireworks.forEach((fw, i) => {
+            fw.update();
+            fw.draw();
+            if (fw.particles[0].life <= 0) {
+                fireworks.splice(i, 1);
             }
         });
-
-        if (particles.length > 0) {
-            requestAnimationFrame(animateFireworks);
-        }
+        requestAnimationFrame(animateFireworks);
     }
+
+    setInterval(() => {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * (canvas.height / 2);
+        const colors = ["#ff0000", "#ff7300", "#ffeb00", "#00ff2b", "#00e1ff", "#7300ff", "#ff00d9"];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        fireworks.push(new Firework(x, y, color));
+    }, 1000);
 
     animateFireworks();
 }
+
+// ----------------- BALLOON EFFECT -----------------
+function releaseBalloons() {
+    setInterval(() => {
+        const balloon = document.createElement("div");
+        balloon.className = "balloon";
+
+        // Pilih warna acak
+        const colors = ["#ff0000", "#ff7300", "#ffeb00", "#00ff2b", "#00e1ff", "#7300ff", "#ff00d9"];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        balloon.style.backgroundColor = randomColor;
+        balloon.style.left = `${Math.random() * window.innerWidth}px`;
+
+        document.body.appendChild(balloon);
+
+        setTimeout(() => {
+            balloon.remove();
+        }, 5000);
+    }, 1200);
+}
+
+function changeBackground() {
+    const colors = ["#FFDEE9", "#B5FFFC", "#D4FC79", "#FFD3A5", "#B0EACD"];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    document.body.style.background = randomColor;
+    document.body.style.transition = "background 1s ease-in-out";
+}
+
+// Ubah warna background setiap 5 detik
+setInterval(changeBackground, 2000);
+

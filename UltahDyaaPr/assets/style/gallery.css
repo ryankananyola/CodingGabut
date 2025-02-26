@@ -7,9 +7,13 @@ body {
 }
 
 h1 {
-    color: #d63384;
-    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.3); /* Warna putih sedikit transparan */
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    border-radius: 15px;
+    display: inline-block;
 }
+
 
 .gallery-container {
     max-width: 828px;
@@ -68,4 +72,48 @@ h1 {
     height: 100%;
     z-index: -1; 
     pointer-events: none;
+}
+
+.balloon {
+    position: absolute;
+    bottom: -100px;
+    width: 60px;
+    height: 80px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), var(--color));
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: floatUp 5s ease-in-out infinite;
+    box-shadow: inset -10px -10px 15px rgba(0, 0, 0, 0.2);
+}
+
+.balloon::before {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background: black;
+    transform: translateX(-50%);
+}
+
+.balloon::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.6);
+    left: 50%;
+    bottom: -50px;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
 }

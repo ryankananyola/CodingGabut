@@ -3,7 +3,9 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    background-color: #ffcccb;
+    background: linear-gradient(to bottom, #FFDEE9, #B5FFFC);
+    background-attachment: fixed;
+    transition: background 1s ease-in-out;
 }
 
 .container {
