@@ -8,22 +8,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    // Menggunakan IntersectionObserver untuk deteksi gambar yang masuk viewport
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("show");
-                createFireworkEffect(entry.target);
-                observer.unobserve(entry.target); // Hentikan observasi setelah terlihat
-            }
-        });
-    }, {
-        root: null, // Pakai viewport sebagai area pengamatan
-        threshold: 0.2, // 20% gambar harus masuk viewport untuk dianggap terlihat
+    // Tambahkan efek fade-in satu per satu setelah halaman dimuat
+    galleryImages.forEach((img, index) => {
+        setTimeout(() => {
+            img.classList.add("show");
+        }, index * 200); // Efek muncul satu per satu setiap 200ms (biar lebih jelas)
     });
 
+    // Menambahkan event listener untuk efek kembang api saat gambar diklik
     galleryImages.forEach(img => {
-        observer.observe(img); // Mendaftarkan setiap gambar ke observer
+        img.addEventListener("click", () => {
+            createFireworkEffect(img);
+        });
     });
 
     // Efek hover tombol kembali
@@ -37,58 +33,58 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 500);
         });
     }
-
-    // Efek Kembang Api
-    function createFireworkEffect(element) {
-        const canvas = document.getElementById("fireworksCanvas");
-        if (!canvas) {
-            console.error("Canvas not found!");
-            return;
-        }
-
-        const ctx = canvas.getContext("2d");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const numParticles = 15;
-        const rect = element.getBoundingClientRect();
-
-        for (let i = 0; i < numParticles; i++) {
-            particles.push({
-                x: rect.left + rect.width / 2 + window.scrollX,
-                y: rect.top + rect.height / 2 + window.scrollY,
-                size: Math.random() * 3 + 1,
-                speedX: (Math.random() - 0.5) * 5,
-                speedY: (Math.random() - 0.5) * 5,
-                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                alpha: 1,
-            });
-        }
-
-        function animateFireworks() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, index) => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-                p.alpha -= 0.02;
-
-                ctx.globalAlpha = p.alpha;
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                if (p.alpha <= 0) {
-                    particles.splice(index, 1);
-                }
-            });
-
-            if (particles.length > 0) {
-                requestAnimationFrame(animateFireworks);
-            }
-        }
-
-        animateFireworks();
-    }
 });
+
+// Fungsi efek kembang api
+function createFireworkEffect(element) {
+    const canvas = document.getElementById("fireworksCanvas");
+    if (!canvas) {
+        console.error("Canvas not found!");
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const numParticles = 20; // Lebih banyak efek agar terlihat keren
+    const rect = element.getBoundingClientRect();
+
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: rect.left + rect.width / 2 + window.scrollX,
+            y: rect.top + rect.height / 2 + window.scrollY,
+            size: Math.random() * 3 + 1,
+            speedX: (Math.random() - 0.5) * 6, // Gerakan lebih dinamis
+            speedY: (Math.random() - 0.5) * 6,
+            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            alpha: 1,
+        });
+    }
+
+    function animateFireworks() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, index) => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.alpha -= 0.02;
+
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (p.alpha <= 0) {
+                particles.splice(index, 1);
+            }
+        });
+
+        if (particles.length > 0) {
+            requestAnimationFrame(animateFireworks);
+        }
+    }
+
+    animateFireworks();
+}
